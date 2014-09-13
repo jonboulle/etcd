@@ -100,7 +100,7 @@ func (n *node) IsDir() bool {
 // If the receiver node is not a key-value pair, a "Not A File" error will be returned.
 func (n *node) Read() (string, *etcdErr.Error) {
 	if n.IsDir() {
-		return "", etcdErr.NewError(etcdErr.EcodeNotFile, "", n.store.CurrentIndex)
+		return "", etcdErr.NewError(etcdErr.EcodeNotFile, "", n.store.currentIndex)
 	}
 
 	return n.Value, nil
@@ -110,7 +110,7 @@ func (n *node) Read() (string, *etcdErr.Error) {
 // If the receiver node is a directory, a "Not A File" error will be returned.
 func (n *node) Write(value string, index uint64) *etcdErr.Error {
 	if n.IsDir() {
-		return etcdErr.NewError(etcdErr.EcodeNotFile, "", n.store.CurrentIndex)
+		return etcdErr.NewError(etcdErr.EcodeNotFile, "", n.store.currentIndex)
 	}
 
 	n.Value = value
@@ -142,7 +142,7 @@ func (n *node) ExpirationAndTTL() (*time.Time, int64) {
 // If the receiver node is not a directory, a "Not A Directory" error will be returned.
 func (n *node) List() ([]*node, *etcdErr.Error) {
 	if !n.IsDir() {
-		return nil, etcdErr.NewError(etcdErr.EcodeNotDir, "", n.store.CurrentIndex)
+		return nil, etcdErr.NewError(etcdErr.EcodeNotDir, "", n.store.currentIndex)
 	}
 
 	nodes := make([]*node, len(n.Children))
@@ -160,7 +160,7 @@ func (n *node) List() ([]*node, *etcdErr.Error) {
 // On success, it returns the file node
 func (n *node) GetChild(name string) (*node, *etcdErr.Error) {
 	if !n.IsDir() {
-		return nil, etcdErr.NewError(etcdErr.EcodeNotDir, n.Path, n.store.CurrentIndex)
+		return nil, etcdErr.NewError(etcdErr.EcodeNotDir, n.Path, n.store.currentIndex)
 	}
 
 	child, ok := n.Children[name]
@@ -178,7 +178,7 @@ func (n *node) GetChild(name string) (*node, *etcdErr.Error) {
 // error will be returned
 func (n *node) Add(child *node) *etcdErr.Error {
 	if !n.IsDir() {
-		return etcdErr.NewError(etcdErr.EcodeNotDir, "", n.store.CurrentIndex)
+		return etcdErr.NewError(etcdErr.EcodeNotDir, "", n.store.currentIndex)
 	}
 
 	_, name := path.Split(child.Path)
@@ -186,7 +186,7 @@ func (n *node) Add(child *node) *etcdErr.Error {
 	_, ok := n.Children[name]
 
 	if ok {
-		return etcdErr.NewError(etcdErr.EcodeNodeExist, "", n.store.CurrentIndex)
+		return etcdErr.NewError(etcdErr.EcodeNodeExist, "", n.store.currentIndex)
 	}
 
 	n.Children[name] = child
@@ -200,13 +200,13 @@ func (n *node) Remove(dir, recursive bool, callback func(path string)) *etcdErr.
 	if n.IsDir() {
 		if !dir {
 			// cannot delete a directory without recursive set to true
-			return etcdErr.NewError(etcdErr.EcodeNotFile, n.Path, n.store.CurrentIndex)
+			return etcdErr.NewError(etcdErr.EcodeNotFile, n.Path, n.store.currentIndex)
 		}
 
 		if len(n.Children) != 0 && !recursive {
 			// cannot delete a directory if it is not empty and the operation
 			// is not recursive
-			return etcdErr.NewError(etcdErr.EcodeDirNotEmpty, n.Path, n.store.CurrentIndex)
+			return etcdErr.NewError(etcdErr.EcodeDirNotEmpty, n.Path, n.store.currentIndex)
 		}
 	}
 

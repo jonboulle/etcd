@@ -88,7 +88,7 @@ func BenchmarkStoreDelete(b *testing.B) {
 			panic(err)
 		}
 	}
-	s.WatcherHub.EventHistory = nil
+	s.watcherHub.EventHistory = nil
 
 	deleteMemStats := new(runtime.MemStats)
 	runtime.GC()
@@ -112,12 +112,12 @@ func BenchmarkWatch(b *testing.B) {
 		w, _ := s.Watch(kvs[i][0], false, false, 0)
 
 		e := newEvent("set", kvs[i][0], uint64(i+1), uint64(i+1))
-		s.WatcherHub.notify(e)
+		s.watcherHub.notify(e)
 		<-w.EventChan()
-		s.CurrentIndex++
+		s.currentIndex++
 	}
 
-	s.WatcherHub.EventHistory = nil
+	s.watcherHub.EventHistory = nil
 	afterMemStats := new(runtime.MemStats)
 	runtime.GC()
 	runtime.ReadMemStats(afterMemStats)

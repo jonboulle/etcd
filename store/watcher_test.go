@@ -22,7 +22,7 @@ import (
 
 func TestWatcher(t *testing.T) {
 	s := newStore()
-	wh := s.WatcherHub
+	wh := s.watcherHub
 	w, err := wh.watch("/foo", true, false, 1)
 	if err != nil {
 		t.Fatalf("%v", err)
