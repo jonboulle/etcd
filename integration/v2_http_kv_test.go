@@ -818,7 +818,10 @@ func TestV2WatchWithIndex(t *testing.T) {
 	var body map[string]interface{}
 	c := make(chan bool, 1)
 	go func() {
-		resp, _ := tc.Get(fmt.Sprintf("%s%s", u, "/v2/keys/foo/bar?wait=true&waitIndex=5"))
+		resp, err := tc.Get(fmt.Sprintf("%s%s", u, "/v2/keys/foo/bar?wait=true&waitIndex=5"))
+		if err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
 		body = tc.ReadBodyJSON(resp)
 		c <- true
 	}()
