@@ -890,7 +890,10 @@ func TestV2WatchKeyInDir(t *testing.T) {
 
 	go func() {
 		// Expect a notification when watching the node
-		resp, _ := tc.Get(fmt.Sprintf("%s%s", u, "/v2/keys/keyindir/bar?wait=true"))
+		resp, err := tc.Get(fmt.Sprintf("%s%s", u, "/v2/keys/keyindir/bar?wait=true"))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 		body = tc.ReadBodyJSON(resp)
 		c <- true
 	}()
